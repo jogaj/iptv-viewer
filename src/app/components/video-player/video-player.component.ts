@@ -57,6 +57,8 @@ export class VideoPlayerComponent {
       // Note: Safari can play HLS natively. Chrome/Firefox usually require hls.js for HLS.
       const canPlayNativeHls = video.canPlayType('application/vnd.apple.mpegurl') !== '';
 
+      let triedTsFallback = false;
+
       const logVideoError = (context: string) => {
         const err = video.error;
         // MediaError codes: 1=ABORTED, 2=NETWORK, 3=DECODE, 4=SRC_NOT_SUPPORTED
@@ -67,8 +69,36 @@ export class VideoPlayerComponent {
         });
       };
 
-      const onError = () => logVideoError('video element error');
+      const tryTsFallbackIfApplicable = () => {
+        // Some providers don't expose HLS; we sometimes build `.m3u8` optimistically.
+        // As a last-ditch attempt, try `.ts` when `.m3u8` isn't supported.
+        if (triedTsFallback) return;
+        if (!/\.m3u8($|\?)/i.test(url)) return;
+        if (video.error?.code !== 4) return;
+
+        const tsUrl = url.replace(/\.m3u8(\?|$)/i, '.ts$1');
+        if (tsUrl === url) return;
+        triedTsFallback = true;
+
+        console.log('[VideoPlayer] retrying as .ts', { from: url, to: tsUrl });
+        this.hls?.destroy();
+        this.hls = null;
+        video.src = tsUrl;
+        void video.play().catch((e) => console.log('[VideoPlayer] play() failed', e));
+      };
+
+      const onError = () => {
+        logVideoError('video element error');
+        tryTsFallbackIfApplicable();
+      };
       video.addEventListener('error', onError);
+
+      console.log('[VideoPlayer] loading', {
+        url,
+        isHls,
+        canPlayNativeHls,
+        hlsJsSupported: Hls.isSupported()
+      });
 
       if (isHls) {
         if (canPlayNativeHls) {

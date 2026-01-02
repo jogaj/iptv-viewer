@@ -192,9 +192,12 @@ export class IptvService {
     const channels: Channel[] = (raw ?? []).map((s) => {
       const streamId = String(s.stream_id);
       const ext = pickContainerExtension(s);
-      const streamUrl = `${baseUrl}/live/${encodeURIComponent(profile.username)}/${encodeURIComponent(
-        profile.password
-      )}/${encodeURIComponent(streamId)}.${ext}`;
+      const directSource = String(s?.direct_source ?? '').trim();
+      const streamUrl =
+        directSource ||
+        `${baseUrl}/live/${encodeURIComponent(profile.username)}/${encodeURIComponent(
+          profile.password
+        )}/${encodeURIComponent(streamId)}.${ext}`;
 
       return {
         id: streamId,
