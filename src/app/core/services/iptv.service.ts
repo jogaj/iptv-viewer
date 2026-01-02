@@ -20,6 +20,10 @@ function normalizeBaseUrl(url: string): string {
 function pickContainerExtension(stream: any): string {
   const ext = String(stream?.container_extension ?? '').trim().toLowerCase();
   if (!ext) return 'm3u8';
+  // Xtream live streams often report `ts`, which is a raw MPEG-TS stream URL. Most browsers
+  // (and hls.js) can't play a `.ts` URL directly as a media source/manifest.
+  // Prefer HLS playlists when possible.
+  if (ext === 'ts' || ext === 'mpegts' || ext === 'mts') return 'm3u8';
   return ext;
 }
 
