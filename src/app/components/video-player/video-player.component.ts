@@ -4,25 +4,7 @@ import videojs from 'video.js';
 @Component({
   selector: 'app-video-player',
   standalone: true,
-  styles: [
-    `
-      .player {
-        width: 100%;
-        height: 100%;
-        background: #000;
-        border-radius: 12px;
-        overflow: hidden;
-        display: block;
-      }
-      video {
-        width: 100%;
-        height: 100%;
-        display: block;
-        object-fit: contain;
-        background: #000;
-      }
-    `
-  ],
+  styleUrls: ['./video-player.component.scss'],
   template: `
     <div class="player">
       <video #video class="video-js vjs-big-play-centered" playsinline></video>
