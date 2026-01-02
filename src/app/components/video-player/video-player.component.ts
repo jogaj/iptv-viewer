@@ -1,5 +1,5 @@
 import { Component, ElementRef, effect, input, viewChild } from '@angular/core';
-import Hls from 'hls.js';
+import videojs from 'video.js';
 
 @Component({
   selector: 'app-video-player',
@@ -25,7 +25,7 @@ import Hls from 'hls.js';
   ],
   template: `
     <div class="player">
-      <video #video controls playsinline></video>
+      <video #video class="video-js vjs-big-play-centered" playsinline></video>
     </div>
   `
 })
@@ -34,101 +34,56 @@ export class VideoPlayerComponent {
 
   private readonly videoRef = viewChild.required<ElementRef<HTMLVideoElement>>('video');
 
-  private hls: Hls | null = null;
+  private player: any | null = null;
 
   constructor() {
     effect((onCleanup) => {
       const url = this.srcUrl();
-      const video = this.videoRef().nativeElement;
+      const videoEl = this.videoRef().nativeElement;
 
-      // Cleanup previous HLS instance
-      this.hls?.destroy();
-      this.hls = null;
+      if (!this.player) {
+        this.player = videojs(videoEl, {
+          controls: true,
+          autoplay: false,
+          preload: 'auto',
+          fluid: true,
+          responsive: true
+        });
+
+        this.player.on('error', () => {
+          const err = this.player?.error();
+          console.log('[VideoPlayer] video.js error', {
+            url: this.srcUrl(),
+            code: err?.code ?? null,
+            message: (err as any)?.message ?? null
+          });
+        });
+      }
 
       if (!url) {
-        video.pause();
-        video.removeAttribute('src');
-        video.load();
+        this.player.pause();
+        this.player.src([]);
         return;
       }
 
       const isHls = /\.m3u8($|\?)/i.test(url);
+      const type = isHls ? 'application/x-mpegURL' : undefined;
 
-      // Note: Safari can play HLS natively. Chrome/Firefox usually require hls.js for HLS.
-      const canPlayNativeHls = video.canPlayType('application/vnd.apple.mpegurl') !== '';
+      console.log('[VideoPlayer] loading', { url, type: type ?? '(inferred)' });
 
-      let triedTsFallback = false;
-
-      const logVideoError = (context: string) => {
-        const err = video.error;
-        // MediaError codes: 1=ABORTED, 2=NETWORK, 3=DECODE, 4=SRC_NOT_SUPPORTED
-        console.log(`[VideoPlayer] ${context}`, {
-          url,
-          code: err?.code ?? null,
-          message: (err as any)?.message ?? null
-        });
-      };
-
-      const tryTsFallbackIfApplicable = () => {
-        // Some providers don't expose HLS; we sometimes build `.m3u8` optimistically.
-        // As a last-ditch attempt, try `.ts` when `.m3u8` isn't supported.
-        if (triedTsFallback) return;
-        if (!/\.m3u8($|\?)/i.test(url)) return;
-        if (video.error?.code !== 4) return;
-
-        const tsUrl = url.replace(/\.m3u8(\?|$)/i, '.ts$1');
-        if (tsUrl === url) return;
-        triedTsFallback = true;
-
-        console.log('[VideoPlayer] retrying as .ts', { from: url, to: tsUrl });
-        this.hls?.destroy();
-        this.hls = null;
-        video.src = tsUrl;
-        void video.play().catch((e) => console.log('[VideoPlayer] play() failed', e));
-      };
-
-      const onError = () => {
-        logVideoError('video element error');
-        tryTsFallbackIfApplicable();
-      };
-      video.addEventListener('error', onError);
-
-      console.log('[VideoPlayer] loading', {
-        url,
-        isHls,
-        canPlayNativeHls,
-        hlsJsSupported: Hls.isSupported()
-      });
-
-      if (isHls) {
-        if (canPlayNativeHls) {
-          video.src = url;
-          void video.play().catch((e) => console.log('[VideoPlayer] play() failed', e));
-        } else if (Hls.isSupported()) {
-          this.hls = new Hls({ enableWorker: true });
-          this.hls.on(Hls.Events.ERROR, (_evt, data) => {
-            console.log('[VideoPlayer] hls.js error', { url, ...data });
-          });
-          this.hls.loadSource(url);
-          this.hls.attachMedia(video);
-          this.hls.on(Hls.Events.MANIFEST_PARSED, () => {
-            void video.play().catch((e) => console.log('[VideoPlayer] play() failed', e));
-          });
-        } else {
-          // Last resort: try setting src directly.
-          video.src = url;
-          void video.play().catch((e) => console.log('[VideoPlayer] play() failed', e));
-        }
-      } else {
-        // Non-HLS URLs (mp4/webm/etc). Setting hls.js here will usually fail.
-        video.src = url;
-        void video.play().catch((e) => console.log('[VideoPlayer] play() failed', e));
-      }
+      this.player.src([{ src: url, type }].filter(Boolean) as any);
+      void this.player.play().catch((e: unknown) => console.log('[VideoPlayer] play() failed', e));
 
       onCleanup(() => {
-        video.removeEventListener('error', onError);
-        this.hls?.destroy();
-        this.hls = null;
+        // no-op; keep player instance for subsequent URL changes.
+      });
+    });
+
+    // Dispose when component is destroyed.
+    effect((onCleanup) => {
+      onCleanup(() => {
+        this.player?.dispose();
+        this.player = null;
       });
     });
   }

@@ -1,5 +1,8 @@
 @use '@angular/material' as mat;
 
+// Video.js default skin
+@import 'video.js/dist/video-js.css';
+
 html,
 body {
   height: 100%;
