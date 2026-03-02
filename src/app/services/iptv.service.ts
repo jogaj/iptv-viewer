@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { Category, Channel, Profile, XtreamProfile } from '../models/iptv.models';
+import { Category, Channel, Profile, XtreamProfile } from '../core/models/iptv.models';
 
 type ParsedM3u = {
   categories: Category[];

@@ -1,0 +1,108 @@
+<div class="container">
+    @if (activeProfile(); as profile) {
+    <div class="layout">
+        <!-- Categories -->
+        <!-- <mat-expansion-panel [expanded]="availablePanel().expanded" [hideToggle]="availablePanel().hideToggle">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    <div style="display:flex;flex-direction: column;">
+                        <app-search-box [title]="'Categories'" [placeholder]="'Filter by category'" (valueChanged)="onCategoryFilterChanged($event)"></app-search-box>
+                        <span class="hint">{{ selectedCategoryName() ?? 'Select a category'}}</span>
+                    </div>
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+
+        </mat-expansion-panel> -->
+        <mat-card class="panel">
+            <mat-card-header class="panel-title">
+                <app-search-box [title]="'Categories'" [placeholder]="'Filter by category'" (valueChanged)="onCategoryFilterChanged($event)"></app-search-box>
+                <mat-card-subtitle class="hint">{{ selectedCategoryName() ?? 'Select a category'}}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-divider></mat-divider>
+            <mat-card-content class="panel-body">
+                @if (categoriesRes.isLoading()) {
+                <div class="panel-body-spinner">
+                    <mat-spinner diameter="36"></mat-spinner>
+                </div>
+                } @else {
+                @if (categories().length === 0) {
+                <p class="hint">No categories found (or request blocked by CORS).</p>
+                } @else {
+                <mat-nav-list>
+                    @for (c of categories(); track c.id) {
+                    <a mat-list-item (click)="selectCategory(c)" [class.selected]="c.id === selectedCategoryId()">
+                        <div matListItemTitle>{{ c.name }}</div>
+                        <div matListItemLine class="hint">
+                            @if (c.count != null) { {{ c.count }} channels }
+                        </div>
+                    </a>
+                    }
+                </mat-nav-list>
+                }
+                }
+            </mat-card-content>
+        </mat-card>
+
+        <!-- Channels -->
+        <mat-card class="panel">
+            <mat-card-header class="panel-title">
+                <app-search-box [title]="'Channels'" [placeholder]="'Filter by channel'" (valueChanged)="onChannelFilterChanged($event)"></app-search-box>
+                <mat-card-subtitle class="hint">
+                   {{ selectedChannel()?.name ?? 'Select a channel' }}
+                </mat-card-subtitle>
+            </mat-card-header>
+            <mat-divider></mat-divider>
+            <mat-card-content class="panel-body">
+                @if (!selectedCategoryId()) {
+                <p class="hint">Select a category to load channels.</p>
+                } @else if (channelsRes.isLoading()) {
+                <div class="panel-body-spinner">
+                    <mat-spinner diameter="36"></mat-spinner>
+                </div>
+                } @else {
+                @if (channels().length === 0) {
+                <p class="hint">No channels found in this category.</p>
+                } @else {
+                <mat-nav-list>
+                    @for (ch of channels(); track ch.id) {
+                    <a mat-list-item (click)="selectChannel(ch)" [class.selected]="ch.id === selectedChannelId()">
+                        <div matListItemTitle>{{ ch.name }}</div>
+                    </a>
+                    }
+                </mat-nav-list>
+                }
+                }
+            </mat-card-content>
+        </mat-card>
+
+        <!-- Player -->
+        <div class="player-panel">
+            <mat-card>
+                <mat-card-header>
+                    <mat-card-title>Player</mat-card-title>
+                    <mat-card-subtitle class="hint">
+                        @if (selectedChannel(); as ch) { {{ ch.name }} } @else { Select a channel }
+                    </mat-card-subtitle>
+                </mat-card-header>
+            </mat-card>
+
+            <div class="player-frame">
+                <app-video-player [srcUrl]="playerUrl()" />
+            </div>
+        </div>
+    </div>
+    } @else {
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>No active profile</mat-card-title>
+            <mat-card-subtitle class="hint">Create/select a profile first, then come back to View.</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-actions>
+            <a mat-flat-button color="primary" routerLink="/profile">
+                <mat-icon>person</mat-icon>
+                Go to Profile
+            </a>
+        </mat-card-actions>
+    </mat-card>
+    }
+</div>

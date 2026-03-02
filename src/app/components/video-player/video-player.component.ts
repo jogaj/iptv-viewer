@@ -5,11 +5,7 @@ import videojs from 'video.js';
   selector: 'app-video-player',
   standalone: true,
   styleUrls: ['./video-player.component.scss'],
-  template: `
-    <div class="player">
-      <video #video class="video-js vjs-big-play-centered" playsinline></video>
-    </div>
-  `
+  templateUrl: './video-player.component.html'
 })
 export class VideoPlayerComponent {
   readonly srcUrl = input<string | null>(null);

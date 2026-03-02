@@ -1,0 +1,124 @@
+<div class="container">
+    <div class="container-grid">
+        <mat-expansion-panel class="ex-pnl" [expanded]="availablePanel().expanded" [hideToggle]="availablePanel().hideToggle">
+            <mat-expansion-panel-header class="ex-pnl-header" [class.no-collapsible]="!breakpointService.isSmallViewport()" (click)="onPanelToggle(ProfilePanelType.available)">
+                <mat-panel-title class="ex-pnl-available-profiles"><mat-icon class="icon-primary">contacts</mat-icon>Available Profiles</mat-panel-title>
+            </mat-expansion-panel-header>
+            @if (profiles().length === 0) {
+                <div class="empty-profiles">
+                    <div><mat-icon>cloud_off</mat-icon></div>
+                    <div>No profiles yet.</div>
+                    <div>Create one on the Setup New Profile.</div>
+                </div>
+            <!-- <p class="hint">No profiles yet. Create one on the right.</p> -->
+            } @else {
+            <mat-nav-list>
+                @for (profile of profiles(); track profile.id) {
+                <mat-list-item>
+                 
+                    <span matListItemAvatar class="profile-list-item-avatar">{{ profile.acronym }}</span>
+                    <div matListItemTitle class="profile-list-item-title">{{ profile.name }}</div>
+                    <div matListItemLine class="profile-list-item-subtitle">
+                        {{ profile.type === 'm3u' ? 'M3U/M3U8' : 'Xtream Codes' }}
+                        @if (profile.id === activeProfileId()) { - Active }
+                    </div>
+      
+
+                    <div class="profile-actions" matListItemMeta>
+                        <button mat-icon-button (click)="selectAndView(profile)" aria-label="Play">
+                            <mat-icon>play_arrow</mat-icon>
+                        </button>
+                        <button mat-icon-button (click)="edit(profile)" aria-label="Edit">
+                            <mat-icon>edit</mat-icon>
+                        </button>
+                        <button mat-icon-button color="warn" (click)="remove(profile)" aria-label="Delete">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </div>
+                </mat-list-item>
+                }
+            </mat-nav-list>
+            }
+        </mat-expansion-panel>
+
+        <mat-expansion-panel class="ex-pnl" [expanded]="createUpdatePanel().expanded"] [hideToggle]="createUpdatePanel().hideToggle">
+            <mat-expansion-panel-header class="ex-pnl-header" [class.no-collapsible]="!breakpointService.isSmallViewport()" (click)="onPanelToggle(ProfilePanelType.createUpdate)">
+                <mat-panel-title class="ex-pnl-setup">
+                    @if (editingProfileId()) {
+                       <mat-icon class="icon-primary">edit</mat-icon>Edit profile
+                    } @else {
+                        <mat-icon class="icon-primary">add_circle</mat-icon>
+                        Setup New Profile
+                    }
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <ng-template matExpansionPanelContent>
+                <mat-tab-group [selectedIndex]="selectedTabIndex()"
+                    (selectedIndexChange)="selectedTabIndex.set($event)">
+                    <mat-tab label="M3U / M3U8 URL">
+                        <ng-template matTabContent>
+                        <form #formM3uDirective="ngForm" class="form m3u" [formGroup]="m3uForm" (ngSubmit)="save('m3u')">
+                            <mat-form-field appearance="outline">
+                                <mat-label>Profile name</mat-label>
+                                <input matInput formControlName="name" />
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline">
+                                <mat-label>M3U / M3U8 URL</mat-label>
+                                <input matInput formControlName="playlistUrl" />
+                                <mat-hint>Example: https://.../playlist.m3u8</mat-hint>
+                            </mat-form-field>
+
+                            <div class="profile-actions flex-end">
+                                <button mat-flat-button color="primary" type="submit" [disabled]="m3uForm.invalid">
+                                    <mat-icon>save</mat-icon>
+                                    Save Profile
+                                </button>
+                                <button mat-button type="button" (click)="reset()">
+                                    Clear
+                                </button>
+                            </div>
+                        </form>
+                        </ng-template>
+                    </mat-tab>
+                    <mat-tab label="Xtream Codes">
+                        <ng-template matTabContent>
+                        <form #formXtreamDirective="ngForm" class="form xtream" [formGroup]="xtreamForm" (ngSubmit)="save('xtream')">
+                            <mat-form-field appearance="outline">
+                                <mat-label>Profile name</mat-label>
+                                <input matInput formControlName="name" />
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline">
+                                <mat-label>Base URL</mat-label>
+                                <input matInput formControlName="baseUrl" />
+                                <mat-hint>Example: http://example.com:8080</mat-hint>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline">
+                                <mat-label>Username</mat-label>
+                                <input matInput formControlName="username" />
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline">
+                                <mat-label>Password</mat-label>
+                                <input matInput formControlName="password" type="password" />
+                            </mat-form-field>
+
+                            <div class="profile-actions flex-end">
+                                <button mat-flat-button color="primary" type="submit" [disabled]="xtreamForm.invalid">
+                                    <mat-icon>save</mat-icon>
+                                    Save
+                                </button>
+                                <button mat-button type="button" (click)="reset()">
+                                    Clear
+                                </button>
+                            </div>
+                        </form>
+                        </ng-template>
+                    </mat-tab>
+                </mat-tab-group>
+            </ng-template>
+        </mat-expansion-panel>
+    </div>
+</div>

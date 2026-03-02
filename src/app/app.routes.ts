@@ -9,13 +9,13 @@ export const routes: Routes = [
   {
     path: 'profile',
     loadComponent: () =>
-      import('./pages/profile/profile.page').then((m) => m.ProfilePageComponent),
+      import('./components/profile/profile.component').then((m) => m.ProfilePageComponent),
     title: 'Profile'
   },
   {
     path: 'view',
     loadComponent: () =>
-      import('./pages/view/view.page').then((m) => m.ViewPageComponent),
+      import('./components/view/view.component').then((m) => m.ViewComponent),
     title: 'View'
   },
   {

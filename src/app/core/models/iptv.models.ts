@@ -15,6 +15,7 @@ export type XtreamProfile = {
 export type BaseProfile = {
   id: string;
   name: string;
+  acronym: string;
   createdAt: number;
   updatedAt: number;
 };
@@ -22,6 +23,11 @@ export type BaseProfile = {
 // Important: model as a union of full shapes (not an intersection with a union),
 // so TS utility types like `Omit`/`Partial` behave as expected.
 export type Profile = (BaseProfile & M3uProfile) | (BaseProfile & XtreamProfile);
+
+export type ProfilePanel = {
+  expanded: boolean;
+  hideToggle: boolean;
+};
 
 export type Category = {
   id: string;
@@ -35,5 +41,3 @@ export type Channel = {
   logoUrl?: string;
   streamUrl: string;
 };
-
-

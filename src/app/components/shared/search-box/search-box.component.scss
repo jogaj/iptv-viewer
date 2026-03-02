@@ -1,0 +1,27 @@
+.container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0;
+    font-size: var(--mat-card-title-text-size, var(--mat-sys-title-medium-size));
+
+    .search-input {
+        border-top:0;
+        border-left:0;
+        border-right: 0;
+        background-color: transparent;
+        width: 100%;
+        font-size: var(--mat-card-title-text-size, var(--mat-sys-title-medium-size));
+        outline: 0;
+        height: 23px;
+        
+    }
+    .search-input:focus {
+        border-bottom-color: var(--mat-button-outlined-label-text-color, var(--mat-sys-primary));
+    }
+
+    .search-icon {
+        cursor: pointer;
+    }
+
+}

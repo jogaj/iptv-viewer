@@ -1,5 +1,42 @@
 @use '@angular/material' as mat;
 
+// @use '../theme-colors';
+
+:root {
+  --custom-primary: #a855f7;
+  --custom-primary-50: #a855f733;
+  --custom-surface-dark: #1e1e21;
+  --custom-gray: #94a3b8;
+  --custom-gray-border: #1e293b;
+  --custom-gray-border-50: #1e293b50;
+  --border-color-dark: light-dark(red, var(--custom-gray-border));
+  --font-color: light-dark(#000, var(--custom-gray));
+  --title-font-color: light-dark(#000, #fff);
+  
+  --space-xs: 0.5em;
+  --space-s: 1em;
+  --space-m: 1.5em; 
+  --space-l: 2em;
+  --space-xl: 2.5em;
+
+  --font-size-xs: 0.5em;  
+  --font-size-s: 0.75em;
+  --font-size-m: 1em;
+  --font-size-l: 1.25em;
+  --font-size-xl: 1.5em;
+  --font-size-2xl: 3em;
+  --font-size-3xl: 4.5em;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --mat-sys-surface: light-dark(red, var(--custom-surface-dark)); // toolbar background
+  --mat-sys-surface-container-low: light-dark(red, var(--custom-surface-dark)); // panel brackground
+  --mat-sys-on-surface: var(--font-color); // font-color
+  --mat-tab-active-label-text-color: var(--custom-primary); // tab text active color
+} 
 
 html,
 body {
@@ -11,27 +48,67 @@ body {
   font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
 
+.icon-primary {
+  --mat-icon-color: var(--custom-primary);
+}
+
+
+
+
 // Material theme (Angular Material v20)
 // For more information: https://material.angular.dev/guide/theming
 html {
+  color-scheme: light dark;
   @include mat.theme(
     (
       color: (
-        theme-type: light,
-        primary: mat.$azure-palette,
-        tertiary: mat.$magenta-palette
+        // theme-type: light dark,
+        primary: mat.$violet-palette,
+        // primary: #a855f7,
+        // tertiary: mat.$magenta-palette
       ),
       typography: (
         brand-family: Roboto,
         plain-family: Roboto
       ),
-      density: 0
-    )
+      density: 0,
+    ),
+     $overrides: ("primary": var(--custom-primary))
+    // $overrides: ("primary": var(--custom-primary), "surface": var(--custom-surface-dark), "surface-container-low": var(--custom-surface-dark))
   );
+
+  // color-scheme:  dark;
+  // @include mat.theme(
+  //   $overrides: ("surface": var(--custom-surface-dark), "surface-container-low": var(--custom-surface-dark))
+  // );
 }
 
 .container {
   padding: 16px;
 }
 
+// Customize the entire app. Change :root to your selector if you want to scope the styles.
+// :root {
+//   @include mat.expansion-overrides((
+//     container-background-color: var(--mat-card-elevated-container-color, var(--mat-sys-surface-container-low))
+//   ));
 
+//   @include mat.icon-overrides((
+//     color: var(--mat-sys-primary)
+//   ));
+// }
+
+
+// @include mat.core();
+
+// :root {
+//   color-scheme: light dark;
+//   @include mat.theme((
+//     color: (
+//       primary: theme-colors.$primary-palette,
+//       tertiary: theme-colors.$tertiary-palette,
+//     ),
+//     typography: Roboto,
+//     density: 0,
+//   ));
+// }

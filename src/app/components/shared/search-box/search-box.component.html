@@ -1,0 +1,14 @@
+<div class="container">
+    @if (searchMode()) {
+    <!-- <mat-form-field>
+        <input matInput placeholder="Start typing to filter...">
+        </mat-form-field> -->
+        <input type="text" class="search-input" [attr.placeholder]="placeholder()" (keyup)="onKeyUp($event)">
+    }@else {
+    {{ title() }}
+    }
+    <mat-icon class="search-icon" (click)="toggleMode($event)">
+        @if (searchMode()) {
+        close
+        } @else {search}</mat-icon>
+</div>

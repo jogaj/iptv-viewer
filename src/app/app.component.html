@@ -1,0 +1,22 @@
+<mat-toolbar class="toolbar">
+    <span class="toolbar-title"><mat-icon class="icon-primary">stream</mat-icon>IPTV Viewer</span>
+    <span class="toolbar-spacer"></span>
+
+    <div class="toolbar-info">
+
+    
+    @if (activeProfileName(); as name) {
+    
+        <span class="toolbar-info-active-profile">Active: {{ name }}</span>
+    }
+
+    <a class="toolbar-link" mat-button routerLink="/view" [disabled]="!activeProfileName()"
+        routerLinkActive="mat-mdc-button-disabled"><mat-icon>play_circle</mat-icon> View</a>
+    <a class="toolbar-link" mat-button routerLink="/profile" routerLinkActive="mat-mdc-button-disabled"><mat-icon>account_circle</mat-icon>
+        Profiles</a>
+    </div>
+</mat-toolbar>
+
+<div class="app-content">
+    <router-outlet />
+</div>

@@ -1,0 +1,53 @@
+.toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-bottom: 1px solid var(--border-color-dark);
+
+    &-title {
+        display: flex;
+        align-items: center;
+        gap: var(--space-xs);
+        font-weight: var(--font-weight-semibold);
+        color: var(--title-font-color);
+    }
+
+    &-spacer {
+        flex: 1;
+    }
+
+    &-info {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+
+        &-active-profile {
+            opacity: 0.7;
+            font-size: 12px;
+        }
+    }
+
+    &-link {
+        color: var(--font-color);
+
+        .mat-icon {
+            height: auto;
+            width: auto;
+            font-size: var(--font-size-xl);
+        }
+    }
+
+    // &-link:hover {
+    //     color: var(--custom-primary);
+    // }
+}
+
+.app-content {
+    min-height: calc(100dvh - 64px);
+}
+
+@media (max-width: 599px) {
+    .app-content {
+        min-height: calc(100dvh - 56px);
+    }
+}
